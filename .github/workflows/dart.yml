@@ -20,9 +20,9 @@ jobs:
       with:
         channel: 'beta'  
     # Get flutter packages
-    - run: flutter pub get
+    #- run: flutter pub get
     # Build :D 
-    - run: flutter upgrade
+    #- run: flutter upgrade
     - run: |+
           cat >~/.netrc <<EOF
           machine api.heroku.com
