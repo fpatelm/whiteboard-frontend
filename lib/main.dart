@@ -58,7 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<String> fetchTitle() async {
-    final response = await http.get(Uri.encodeFull('http://backend:8081/title'),
+    final response = await http.get(
+        Uri.encodeFull('https://draw-backend.herokuapp.com/title'),
         headers: {"Accept": "application/json"});
     if (response.statusCode == 200) {
       var v = json.decode(response.body);
