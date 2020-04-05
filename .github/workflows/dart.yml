@@ -19,10 +19,6 @@ jobs:
     - uses: subosito/flutter-action@v1
       with:
         channel: 'beta'  
-    # Get flutter packages
-    #- run: flutter pub get
-    # Build :D 
-    #- run: flutter upgrade
     - run: |+
           cat >~/.netrc <<EOF
           machine api.heroku.com
