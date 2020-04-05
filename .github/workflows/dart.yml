@@ -32,6 +32,7 @@ jobs:
               login $HEROKU_EMAIL
               password $HEROKU_API_KEY
           EOF
+    - run: heroku login      
     - run: heroku container:login 
     - run: heroku container:push web --app draw-frontend
     - run: heroku container:release web --app draw-frontend
