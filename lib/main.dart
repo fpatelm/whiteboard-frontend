@@ -1,35 +1,23 @@
 import 'dart:convert';
 
-import 'package:firebase/firebase.dart' as fb;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:web_socket_channel/html.dart';
 
-void main() {
-  if (fb.apps.isEmpty) {
-    fb.initializeApp(
-        apiKey: "AIzaSyAQHRfP5PChm2s30kmxD1LJf42KcUZ372Y",
-        appId: "1:863761083258:web:58e32e168ebe87978084c3",
-        authDomain: "midyear-nebula-113706.firebaseapp.com",
-        databaseURL: "https://midyear-nebula-113706.firebaseio.com",
-        measurementId: "863761083258",
-        projectId: "midyear-nebula-113706",
-        storageBucket: "midyear-nebula-113706.appspot.com");
-  }
+Future<void> main() async {
   return runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    final title = 'WebSocket Demo';
+    final title = 'Cloud Firestore';
     return MaterialApp(
       title: title,
       debugShowCheckedModeBanner: false,
       home: MyHomePage(
         title: title,
-        channel:
-            HtmlWebSocketChannel.connect(Uri.parse('ws://localhost:8080/name')),
       ),
     );
   }
@@ -37,10 +25,8 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   final String title;
-  final HtmlWebSocketChannel channel;
 
-  MyHomePage({Key key, @required this.title, @required this.channel})
-      : super(key: key);
+  MyHomePage({Key key, @required this.title}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -48,10 +34,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   TextEditingController _controller = TextEditingController();
-
+  List<String> _myList = new List<String>();
   @override
   Widget build(BuildContext context) {
-    List<String> _litems = new List<String>();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -67,16 +52,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: InputDecoration(labelText: 'Send a message'),
               ),
             ),
-            StreamBuilder(
-              stream: widget.channel.stream,
-              builder: (context, snapshot) {
-                _litems.add(snapshot.data);
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24.0),
-                  child: Text(snapshot.hasData ? '${snapshot.data}' : ''),
-                );
-              },
-            )
+            StreamBuilder<DocumentSnapshot>(
+                stream: Firestore.instance
+                    .collection('messages')
+                    .document('payload')
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text("Err8or: ${snapshot.error}");
+                  }
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return CircularProgressIndicator();
+                    default:
+                      _myList.add(snapshot.data['info']);
+                      return Expanded(
+                        child: ListView.builder(
+                            itemCount: _myList.length,
+                            itemBuilder: (BuildContext ctx, int index) {
+                              return Text(_myList[index]);
+                            }),
+                      );
+                  }
+                })
           ],
         ),
       ),
@@ -90,13 +89,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _sendMessage() {
     if (_controller.text.isNotEmpty) {
-      widget.channel.sink.add({"name": _controller.text});
+      try {
+        Firestore.instance
+            .collection('messages')
+            .document('payload')
+            .updateData({'info': _controller.text});
+        _controller.text = "";
+      } catch (e) {
+        print(e.toString());
+      }
     }
   }
 
   @override
   void dispose() {
-    widget.channel.sink.close();
     super.dispose();
   }
 

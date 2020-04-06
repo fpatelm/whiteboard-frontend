@@ -28,6 +28,8 @@ dependencies:
   stomp: ^0.8.0
   firebase: ^7.2.1
   cloud_firestore: ^0.13.4+2
+  firebase_web: ^5.0.9
+  firebase_core: ^0.4.4+3
 
 dev_dependencies:
   flutter_test:
