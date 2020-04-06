@@ -19,19 +19,16 @@ jobs:
     - uses: subosito/flutter-action@v1
       with:
         channel: 'beta'  
-    # Get flutter packages
-    - run: flutter pub get
-    # Build :D 
-    - run: flutter upgrade
     - run: |+
           cat >~/.netrc <<EOF
           machine api.heroku.com
-              login $HEROKU_EMAIL
-              password $HEROKU_API_KEY
+              login ${{ secrets.HEROKU_EMAIL }}
+              password ${{ secrets.HEROKU_API_KEY }}
           machine git.heroku.com
-              login $HEROKU_EMAIL
-              password $HEROKU_API_KEY
+              login ${{ secrets.HEROKU_EMAIL }}
+              password ${{ secrets.HEROKU_API_KEY }}
           EOF
+    - run: heroku login      
     - run: heroku container:login 
     - run: heroku container:push web --app draw-frontend
     - run: heroku container:release web --app draw-frontend
