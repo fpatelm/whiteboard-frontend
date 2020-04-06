@@ -1,60 +1,103 @@
 import 'dart:convert';
 
+import 'package:firebase/firebase.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:web_socket_channel/html.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  if (fb.apps.isEmpty) {
+    fb.initializeApp(
+        apiKey: "AIzaSyAQHRfP5PChm2s30kmxD1LJf42KcUZ372Y",
+        appId: "1:863761083258:web:58e32e168ebe87978084c3",
+        authDomain: "midyear-nebula-113706.firebaseapp.com",
+        databaseURL: "https://midyear-nebula-113706.firebaseio.com",
+        measurementId: "863761083258",
+        projectId: "midyear-nebula-113706",
+        storageBucket: "midyear-nebula-113706.appspot.com");
+  }
+  return runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final title = 'WebSocket Demo';
     return MaterialApp(
-      title: 'Frontend App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      title: title,
+      debugShowCheckedModeBanner: false,
+      home: MyHomePage(
+        title: title,
+        channel:
+            HtmlWebSocketChannel.connect(Uri.parse('ws://localhost:8080/name')),
       ),
-      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
+  final String title;
+  final HtmlWebSocketChannel channel;
+
+  MyHomePage({Key key, @required this.title, @required this.channel})
+      : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String title;
+  TextEditingController _controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    List<String> _litems = new List<String>();
     return Scaffold(
       appBar: AppBar(
-        title: FutureBuilder<String>(
-          future: fetchTitle(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Text(snapshot.data.toString());
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
-            return CircularProgressIndicator();
-          },
-        ),
+        title: Text(widget.title),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+            Form(
+              child: TextFormField(
+                controller: _controller,
+                decoration: InputDecoration(labelText: 'Send a message'),
+              ),
             ),
+            StreamBuilder(
+              stream: widget.channel.stream,
+              builder: (context, snapshot) {
+                _litems.add(snapshot.data);
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24.0),
+                  child: Text(snapshot.hasData ? '${snapshot.data}' : ''),
+                );
+              },
+            )
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _sendMessage,
+        tooltip: 'Send message',
+        child: Icon(Icons.send),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  void _sendMessage() {
+    if (_controller.text.isNotEmpty) {
+      widget.channel.sink.add({"name": _controller.text});
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.channel.sink.close();
+    super.dispose();
   }
 
   Future<String> fetchTitle() async {
