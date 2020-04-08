@@ -30,10 +30,15 @@ dependencies:
   cloud_firestore: ^0.13.4+2
   firebase_web: ^5.0.9
   firebase_core: ^0.4.4+3
+  mobx: ^1.1.1
+  flutter_mobx: ^1.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mobx_codegen: ^1.0.3
+  build_runner: ^1.8.1
+  socket_io_client: ^0.9.9
 
 
 # For information on the generic Dart part of this file, see the
