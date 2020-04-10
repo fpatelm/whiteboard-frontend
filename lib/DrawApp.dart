@@ -7,6 +7,7 @@ import 'package:my_frontend/global.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import 'Board.dart';
+import 'models/Payload.dart';
 
 class DrawApp extends StatelessWidget {
   const DrawApp({Key key}) : super(key: key);
@@ -35,6 +36,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Offset> points = new List<Offset>();
+  List<Payload> payloads = new List<Payload>();
   IO.Socket socket = IO.io(getUrl(), <String, dynamic>{
     'transports': ['websocket'] // optional
   });
@@ -110,9 +112,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 Offset point = box.globalToLocal(details.globalPosition);
 
                 points = List.from(points)..add(point);
+                Payload payload = Payload(
+                    color: Colors.black,
+                    offset: point,
+                    strokeCap: StrokeCap.round,
+                    strokeWidth: 4.0);
+
+                payloads = List.from(payloads)..add(payload);
                 var i = {'dx': 507.2890625, 'dy': 369.0};
 
                 print(Offset(i['dx'] as double, i['dy'] as double).toString());
+
+                socket.emit('message', payload.toJson());
+
                 socket.emitWithAck('chat', point.toJson(), ack: (data) {
                   print('ack $data');
                   if (data != null) {
@@ -121,6 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     print("Null");
                   }
                 });
+
                 print(point);
               });
             },
