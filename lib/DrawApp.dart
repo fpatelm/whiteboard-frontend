@@ -2,10 +2,11 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_frontend/global.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+
+import 'Sketcher.dart';
 
 class DrawApp extends StatelessWidget {
   const DrawApp({Key key}) : super(key: key);
@@ -33,7 +34,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  IO.Socket socket = IO.io('http://localhost:8080', <String, dynamic>{
+  List<Offset> points = new List<Offset>();
+  IO.Socket socket =
+      IO.io('http://whiteboard-be.herokuapp.com', <String, dynamic>{
     'transports': ['websocket'] // optional
   });
 
@@ -41,6 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _listeners();
+    _connectSocket01();
   }
 
   _listeners() {
@@ -59,10 +63,23 @@ class _MyHomePageState extends State<MyHomePage> {
     socket.on('reconnect_error', (data) => print("faizal reconnect_error"));
     socket.on('reconnecting', (data) => print("faizal reconnecting"));
 
-    socket.on('chat', (data) {
-      print('here: ' + data.toString());
-      mxStore.setText(data.toString());
-      mxStore.setIndex(7);
+    socket.on('broadcast', (data) {
+      print('from server here: ' + data.toString());
+      setState(() {
+        points = List.from(points)
+          ..add(Offset(data['dx'] as double, data['dy'] as double));
+      });
+    });
+
+    socket.on('mouseup', (_) {
+      setState(() {
+        points.add(null);
+      });
+    });
+    socket.on('clear', (_) {
+      setState(() {
+        points.clear();
+      });
     });
   }
 
@@ -87,84 +104,54 @@ class _MyHomePageState extends State<MyHomePage> {
       alignment: Alignment.topLeft,
       color: Colors.blueGrey[50],
       child: CustomPaint(
-        painter: Sketcher(mxStore.points),
+        painter: Sketcher(points),
       ),
     );
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: <Widget>[
-          StreamBuilder<DocumentSnapshot>(
-              stream: Firestore.instance
-                  .collection('messages')
-                  .document('payload')
-                  .snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.hasError) {
-                  return Text("Err8or: ${snapshot.error}");
-                }
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    return CircularProgressIndicator();
-                  default:
-                    List incoming = snapshot.data['point'];
-                    for (String cordinate in incoming.reversed.toList()) {
-                      print(cordinate);
-                      if (cordinate == "null") {
-                        mxStore.addPoint(null);
-                      } else {
-                        mxStore.addPoints(
-                            double.parse(cordinate.split(';').elementAt(0)),
-                            double.parse(cordinate.split(';').elementAt(1)));
-                      }
-                    }
-
-                    return Container();
-                }
-              }),
           GestureDetector(
             onPanUpdate: (details) {
               setState(() {
                 RenderBox box = context.findRenderObject();
                 Offset point = box.globalToLocal(details.globalPosition);
-                mxStore.addPoint(point);
-                try {
-                  mxStore
-                      .addList("${point.dx.toString()};${point.dy.toString()}");
 
-                  print(mxStore.storeList);
-                  Firestore.instance
-                      .collection('messages')
-                      .document('payload')
-                      .setData(mxStore.storeList);
-                } catch (e) {
-                  print(e.toString());
-                }
+                points = List.from(points)..add(point);
+                var i = {'dx': 507.2890625, 'dy': 369.0};
+
+                print(Offset(i['dx'] as double, i['dy'] as double).toString());
+                socket.emitWithAck('chat', point.toJson(), ack: (data) {
+                  print('ack $data');
+                  if (data != null) {
+                    print('from server $data');
+                  } else {
+                    print("Null");
+                  }
+                });
                 print(point);
               });
             },
             onPanEnd: (details) {
-              mxStore.addList("null");
-              mxStore.addPoint(null);
-              Firestore.instance
-                  .collection('messages')
-                  .document('payload')
-                  .setData(mxStore.storeList);
+              setState(() {
+                socket.emitWithAck('mouseup', null, ack: (data) {
+                  print('ack $data');
+                });
+                points.add(null);
+              });
             },
-            child: Observer(
-              builder: (_) => board,
-            ),
+            child: board,
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          mxStore.clear();
-          Firestore.instance
-              .collection('messages')
-              .document('payload')
-              .delete();
+          setState(() {
+            points.clear();
+            socket.emitWithAck('clear', null, ack: (data) {
+              print('ack clear');
+            });
+          });
         },
         tooltip: 'clear screen',
         child: Icon(Icons.refresh),
@@ -187,30 +174,5 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       throw Exception('Failed to load post');
     }
-  }
-}
-
-class Sketcher extends CustomPainter {
-  final List<Offset> points;
-
-  Sketcher(this.points);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
-      ..color = Colors.black
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 4.0;
-
-    for (int i = 0; i < points.length - 1; i++) {
-      if (points[i] != null && points[i + 1] != null) {
-        canvas.drawLine(points[i], points[i + 1], paint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(Sketcher oldDelegate) {
-    return oldDelegate.points != points;
   }
 }

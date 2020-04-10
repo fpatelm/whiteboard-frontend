@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>863761083258-o7rk2r5tmst5e2qjgkouo6q5ejd6n10t.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.863761083258-o7rk2r5tmst5e2qjgkouo6q5ejd6n10t</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>863761083258-hmc3tug2mrkqd9mpcqm2h68nn536uqfk.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCsb3BsI29-v2_NlTEMPHmqweDT9X66nh0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>863761083258</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.drawSocketFrontend</string>
+	<key>PROJECT_ID</key>
+	<string>midyear-nebula-113706</string>
+	<key>STORAGE_BUCKET</key>
+	<string>midyear-nebula-113706.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:863761083258:ios:22ebf7da49cc67ef8084c3</string>
+	<key>DATABASE_URL</key>
+	<string>https://midyear-nebula-113706.firebaseio.com</string>
+</dict>
+</plist>

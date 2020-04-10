@@ -60,7 +60,8 @@ abstract class _AppState with Store {
     ));
 
   @action
-  addPoint(Offset point) => this.points..add(point);
+  addPoint(Offset point) =>
+      points = (List.from(points) as ObservableList)..add(point);
 
   @action
   clear() {
