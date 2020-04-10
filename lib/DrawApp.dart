@@ -35,8 +35,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Offset> points = new List<Offset>();
-  IO.Socket socket =
-      IO.io('http://whiteboard-be.herokuapp.com', <String, dynamic>{
+  IO.Socket socket = IO.io(getUrl(), <String, dynamic>{
     'transports': ['websocket'] // optional
   });
 
