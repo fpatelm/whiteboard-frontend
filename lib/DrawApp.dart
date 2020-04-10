@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:my_frontend/global.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-import 'Sketcher.dart';
+import 'Board.dart';
 
 class DrawApp extends StatelessWidget {
   const DrawApp({Key key}) : super(key: key);
@@ -99,14 +99,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final Container board = Container(
-      margin: EdgeInsets.all(1.0),
-      alignment: Alignment.topLeft,
-      color: Colors.blueGrey[50],
-      child: CustomPaint(
-        painter: Sketcher(points),
-      ),
-    );
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -140,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 points.add(null);
               });
             },
-            child: board,
+            child: Board(points: points).build(context),
           ),
         ],
       ),
