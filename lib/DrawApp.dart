@@ -2,18 +2,19 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_frontend/global.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import 'Board.dart';
+import 'Menu.dart';
 import 'models/Payload.dart';
 
 class DrawApp extends StatelessWidget {
   const DrawApp({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    final title = 'Cloud Firestore';
+    final title = 'Ayaan Whiteboard';
 
     return MaterialApp(
       title: title,
@@ -35,11 +36,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Offset> points = new List<Offset>();
   List<Payload> payloads = new List<Payload>();
-  IO.Socket socket = IO.io(getUrl(), <String, dynamic>{
-    'transports': ['websocket'] // optional
-  });
 
   @override
   void initState() {
@@ -50,53 +47,43 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   _listeners() {
-    socket.on('connect', (data) {
-      mxStore.setConnectionState("Online");
+    mxStore.socket.on('connect', (data) {
       print("connect");
     });
-    socket.on('connect_error', (data) => print(" faizal Error"));
+    mxStore.socket.on('connect_error', (data) => print(" faizal Error"));
 
-    socket.on('disconnect', (data) {
-      mxStore.setConnectionState("Offline");
+    mxStore.socket.on('disconnect', (data) {
       print("faizal Disconnected");
     });
 
-    socket.on('reconnect_failed', (data) => print("faizal reconnect_failed"));
-    socket.on('reconnect_error', (data) => print("faizal reconnect_error"));
-    socket.on('reconnecting', (data) => print("faizal reconnecting"));
+    mxStore.socket
+        .on('reconnect_failed', (data) => print("faizal reconnect_failed"));
+    mxStore.socket
+        .on('reconnect_error', (data) => print("faizal reconnect_error"));
+    mxStore.socket.on('reconnecting', (data) => print("faizal reconnecting"));
 
-    socket.on('broadcast', (data) {
-      print('from server here: ' + data.toString());
-      setState(() {
-        points = List.from(points)
-          ..add(Offset(data['dx'] as double, data['dy'] as double));
-      });
+    mxStore.socket.on('broadcast', (data) {
+      mxStore.addPayload(Payload.fromJson(data));
     });
 
-    socket.on('mouseup', (_) {
-      setState(() {
-        points.add(null);
-      });
+    mxStore.socket.on('mouseup', (_) {
+      print("mouse up ${mxStore.socket.id}");
+      Payload payload = Payload(
+          color: Colors.black,
+          offset: null,
+          strokeCap: StrokeCap.round,
+          strokeWidth: 4.0);
+      mxStore.addPayload(payload);
     });
-    socket.on('clear', (_) {
-      setState(() {
-        points.clear();
-      });
+    mxStore.socket.on('clear', (_) {
+      mxStore.clear();
+      print("clear ${mxStore.socket.id}");
     });
   }
 
   _connectSocket01() {
-    try {
-      socket.connect();
-    } catch (e, s) {
-      print(s.toString() + e.toString());
-    }
-
-    print("connect${socket.connected}");
-  }
-
-  _onSocketInfo(dynamic data) {
-    print("Socket info: " + data);
+    mxStore.socket.connect();
+    print("connect? ${mxStore.socket.connected}");
   }
 
   @override
@@ -107,60 +94,59 @@ class _MyHomePageState extends State<MyHomePage> {
         children: <Widget>[
           GestureDetector(
             onPanUpdate: (details) {
-              setState(() {
-                RenderBox box = context.findRenderObject();
-                Offset point = box.globalToLocal(details.globalPosition);
+              RenderBox box = context.findRenderObject();
+              Offset point = box.globalToLocal(details.globalPosition);
 
-                points = List.from(points)..add(point);
-                Payload payload = Payload(
-                    color: Colors.black,
-                    offset: point,
-                    strokeCap: StrokeCap.round,
-                    strokeWidth: 4.0);
+              Payload payload = Payload(
+                  color: mxStore.color,
+                  offset: point,
+                  strokeCap: mxStore.strokeCap,
+                  strokeWidth: mxStore.strokeWidth);
 
-                payloads = List.from(payloads)..add(payload);
-                var i = {'dx': 507.2890625, 'dy': 369.0};
-
-                print(Offset(i['dx'] as double, i['dy'] as double).toString());
-
-                socket.emit('message', payload.toJson());
-
-                socket.emitWithAck('chat', point.toJson(), ack: (data) {
-                  print('ack $data');
-                  if (data != null) {
-                    print('from server $data');
-                  } else {
-                    print("Null");
-                  }
-                });
-
-                print(point);
+              mxStore.addPayload(payload);
+              print(payload.toJson());
+              mxStore.socket.emitWithAck('chat', payload.toJson(), ack: (data) {
+                print('ack $data');
+                if (data != null) {
+                  print('from server $data');
+                } else {
+                  print("Null");
+                }
               });
+
+              //print(point);
             },
             onPanEnd: (details) {
-              setState(() {
-                socket.emitWithAck('mouseup', null, ack: (data) {
-                  print('ack $data');
-                });
-                points.add(null);
-              });
+              mxStore.socket.emit('mouseup', null);
+              Payload payload = Payload(
+                  color: Colors.black,
+                  offset: null,
+                  strokeCap: StrokeCap.round,
+                  strokeWidth: 4.0);
+
+              mxStore.addPayload(payload);
             },
-            child: Board(points: points).build(context),
+            child: Observer(
+              builder: (_) => Board(
+                payloads: mxStore.payloads,
+              ).build(context),
+            ),
           ),
+          Positioned(
+            top: 5,
+            right: 5,
+            child: Observer(
+              builder: (_) => IconButton(
+                icon: Icon(Icons.colorize),
+                onPressed: () {},
+                color: mxStore.color,
+              ),
+            ),
+          )
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            points.clear();
-            socket.emitWithAck('clear', null, ack: (data) {
-              print('ack clear');
-            });
-          });
-        },
-        tooltip: 'clear screen',
-        child: Icon(Icons.refresh),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton:
+          MenuDrawing(), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 

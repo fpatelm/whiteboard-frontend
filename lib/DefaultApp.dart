@@ -7,8 +7,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-import 'global.dart';
-
 class DefaultApp extends StatelessWidget {
   const DefaultApp({Key key}) : super(key: key);
   @override
@@ -49,13 +47,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   _listeners() {
     socket.on('connect', (data) {
-      mxStore.setConnectionState("Online");
       print("connect");
     });
     socket.on('connect_error', (data) => print(" faizal Error"));
 
     socket.on('disconnect', (data) {
-      mxStore.setConnectionState("Offline");
       print("faizal Disconnected");
     });
 
@@ -63,11 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
     socket.on('reconnect_error', (data) => print("faizal reconnect_error"));
     socket.on('reconnecting', (data) => print("faizal reconnecting"));
 
-    socket.on('chat', (data) {
-      print('here: ' + data.toString());
-      mxStore.setText(data.toString());
-      mxStore.setIndex(7);
-    });
+    socket.on('chat', (data) {});
   }
 
   _connectSocket01() {
@@ -98,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Observer(
-                builder: (_) => Text(mxStore.conectionState),
+                builder: (_) => Text("mxStore.conectionState"),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -122,11 +114,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   controller: _controller,
                   decoration: InputDecoration(labelText: 'Send a message'),
                 ),
-              ),
-              Observer(
-                builder: (_) => mxStore.textFromServer == null
-                    ? Text("waiting")
-                    : Text(mxStore.textFromServer),
               ),
             ],
           ),

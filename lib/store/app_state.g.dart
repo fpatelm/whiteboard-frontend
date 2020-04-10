@@ -9,155 +9,81 @@ part of 'app_state.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$AppState on _AppState, Store {
-  Computed<Map<String, ObservableList<String>>> _$storeListComputed;
+  final _$payloadsAtom = Atom(name: '_AppState.payloads');
 
   @override
-  Map<String, ObservableList<String>> get storeList => (_$storeListComputed ??=
-          Computed<Map<String, ObservableList<String>>>(() => super.storeList))
-      .value;
-
-  final _$conectionStateAtom = Atom(name: '_AppState.conectionState');
-
-  @override
-  String get conectionState {
-    _$conectionStateAtom.context.enforceReadPolicy(_$conectionStateAtom);
-    _$conectionStateAtom.reportObserved();
-    return super.conectionState;
+  ObservableList<Payload> get payloads {
+    _$payloadsAtom.context.enforceReadPolicy(_$payloadsAtom);
+    _$payloadsAtom.reportObserved();
+    return super.payloads;
   }
 
   @override
-  set conectionState(String value) {
-    _$conectionStateAtom.context.conditionallyRunInAction(() {
-      super.conectionState = value;
-      _$conectionStateAtom.reportChanged();
-    }, _$conectionStateAtom, name: '${_$conectionStateAtom.name}_set');
+  set payloads(ObservableList<Payload> value) {
+    _$payloadsAtom.context.conditionallyRunInAction(() {
+      super.payloads = value;
+      _$payloadsAtom.reportChanged();
+    }, _$payloadsAtom, name: '${_$payloadsAtom.name}_set');
   }
 
-  final _$indexAtom = Atom(name: '_AppState.index');
+  final _$colorAtom = Atom(name: '_AppState.color');
 
   @override
-  int get index {
-    _$indexAtom.context.enforceReadPolicy(_$indexAtom);
-    _$indexAtom.reportObserved();
-    return super.index;
-  }
-
-  @override
-  set index(int value) {
-    _$indexAtom.context.conditionallyRunInAction(() {
-      super.index = value;
-      _$indexAtom.reportChanged();
-    }, _$indexAtom, name: '${_$indexAtom.name}_set');
-  }
-
-  final _$textFromServerAtom = Atom(name: '_AppState.textFromServer');
-
-  @override
-  String get textFromServer {
-    _$textFromServerAtom.context.enforceReadPolicy(_$textFromServerAtom);
-    _$textFromServerAtom.reportObserved();
-    return super.textFromServer;
+  Color get color {
+    _$colorAtom.context.enforceReadPolicy(_$colorAtom);
+    _$colorAtom.reportObserved();
+    return super.color;
   }
 
   @override
-  set textFromServer(String value) {
-    _$textFromServerAtom.context.conditionallyRunInAction(() {
-      super.textFromServer = value;
-      _$textFromServerAtom.reportChanged();
-    }, _$textFromServerAtom, name: '${_$textFromServerAtom.name}_set');
+  set color(Color value) {
+    _$colorAtom.context.conditionallyRunInAction(() {
+      super.color = value;
+      _$colorAtom.reportChanged();
+    }, _$colorAtom, name: '${_$colorAtom.name}_set');
   }
 
-  final _$_myListAtom = Atom(name: '_AppState._myList');
+  final _$strokeCapAtom = Atom(name: '_AppState.strokeCap');
 
   @override
-  ObservableList<String> get _myList {
-    _$_myListAtom.context.enforceReadPolicy(_$_myListAtom);
-    _$_myListAtom.reportObserved();
-    return super._myList;
-  }
-
-  @override
-  set _myList(ObservableList<String> value) {
-    _$_myListAtom.context.conditionallyRunInAction(() {
-      super._myList = value;
-      _$_myListAtom.reportChanged();
-    }, _$_myListAtom, name: '${_$_myListAtom.name}_set');
-  }
-
-  final _$pointsAtom = Atom(name: '_AppState.points');
-
-  @override
-  ObservableList<Offset> get points {
-    _$pointsAtom.context.enforceReadPolicy(_$pointsAtom);
-    _$pointsAtom.reportObserved();
-    return super.points;
+  StrokeCap get strokeCap {
+    _$strokeCapAtom.context.enforceReadPolicy(_$strokeCapAtom);
+    _$strokeCapAtom.reportObserved();
+    return super.strokeCap;
   }
 
   @override
-  set points(ObservableList<Offset> value) {
-    _$pointsAtom.context.conditionallyRunInAction(() {
-      super.points = value;
-      _$pointsAtom.reportChanged();
-    }, _$pointsAtom, name: '${_$pointsAtom.name}_set');
+  set strokeCap(StrokeCap value) {
+    _$strokeCapAtom.context.conditionallyRunInAction(() {
+      super.strokeCap = value;
+      _$strokeCapAtom.reportChanged();
+    }, _$strokeCapAtom, name: '${_$strokeCapAtom.name}_set');
+  }
+
+  final _$strokeWidthAtom = Atom(name: '_AppState.strokeWidth');
+
+  @override
+  double get strokeWidth {
+    _$strokeWidthAtom.context.enforceReadPolicy(_$strokeWidthAtom);
+    _$strokeWidthAtom.reportObserved();
+    return super.strokeWidth;
+  }
+
+  @override
+  set strokeWidth(double value) {
+    _$strokeWidthAtom.context.conditionallyRunInAction(() {
+      super.strokeWidth = value;
+      _$strokeWidthAtom.reportChanged();
+    }, _$strokeWidthAtom, name: '${_$strokeWidthAtom.name}_set');
   }
 
   final _$_AppStateActionController = ActionController(name: '_AppState');
 
   @override
-  dynamic setIndex(int value) {
+  dynamic addPayload(Payload payload) {
     final _$actionInfo = _$_AppStateActionController.startAction();
     try {
-      return super.setIndex(value);
-    } finally {
-      _$_AppStateActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic setConnectionState(String value) {
-    final _$actionInfo = _$_AppStateActionController.startAction();
-    try {
-      return super.setConnectionState(value);
-    } finally {
-      _$_AppStateActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic setText(String value) {
-    final _$actionInfo = _$_AppStateActionController.startAction();
-    try {
-      return super.setText(value);
-    } finally {
-      _$_AppStateActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic addList(String input) {
-    final _$actionInfo = _$_AppStateActionController.startAction();
-    try {
-      return super.addList(input);
-    } finally {
-      _$_AppStateActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic addPoints(double a, double b) {
-    final _$actionInfo = _$_AppStateActionController.startAction();
-    try {
-      return super.addPoints(a, b);
-    } finally {
-      _$_AppStateActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic addPoint(Offset point) {
-    final _$actionInfo = _$_AppStateActionController.startAction();
-    try {
-      return super.addPoint(point);
+      return super.addPayload(payload);
     } finally {
       _$_AppStateActionController.endAction(_$actionInfo);
     }
@@ -174,10 +100,30 @@ mixin _$AppState on _AppState, Store {
   }
 
   @override
-  dynamic resetIndex() {
+  dynamic setStrokeWidth(double i) {
     final _$actionInfo = _$_AppStateActionController.startAction();
     try {
-      return super.resetIndex();
+      return super.setStrokeWidth(i);
+    } finally {
+      _$_AppStateActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setStrokeCap(StrokeCap i) {
+    final _$actionInfo = _$_AppStateActionController.startAction();
+    try {
+      return super.setStrokeCap(i);
+    } finally {
+      _$_AppStateActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setColor(Color i) {
+    final _$actionInfo = _$_AppStateActionController.startAction();
+    try {
+      return super.setColor(i);
     } finally {
       _$_AppStateActionController.endAction(_$actionInfo);
     }
@@ -186,7 +132,7 @@ mixin _$AppState on _AppState, Store {
   @override
   String toString() {
     final string =
-        'conectionState: ${conectionState.toString()},index: ${index.toString()},textFromServer: ${textFromServer.toString()},points: ${points.toString()},storeList: ${storeList.toString()}';
+        'payloads: ${payloads.toString()},color: ${color.toString()},strokeCap: ${strokeCap.toString()},strokeWidth: ${strokeWidth.toString()}';
     return '{$string}';
   }
 }

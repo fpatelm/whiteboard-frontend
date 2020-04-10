@@ -1,76 +1,55 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
+import 'package:my_frontend/models/Payload.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+
+import '../global.dart';
 
 part 'app_state.g.dart';
 
 class AppState extends _AppState with _$AppState {
-  AppState() {
-    this.resetIndex();
-    this.textFromServer = null;
-  }
+  AppState();
 }
 
 // The store-class
 abstract class _AppState with Store {
-  @observable
-  String conectionState;
+  IO.Socket socket = IO.io(getUrl(), <String, dynamic>{
+    'transports': ['websocket'] // optional
+  });
 
   @observable
-  int index;
+  ObservableList<Payload> payloads = new ObservableList<Payload>();
 
   @observable
-  String textFromServer = "";
+  Color color = Colors.blue;
 
   @observable
-  ObservableList<String> _myList = new ObservableList<String>();
+  StrokeCap strokeCap = StrokeCap.round;
 
   @observable
-  ObservableList<Offset> points = new ObservableList<Offset>();
-
-  @computed
-  Map<String, ObservableList<String>> get storeList => {'point': _myList};
+  double strokeWidth = 4.0;
 
   @action
-  setIndex(int value) {
-    print("set state$value");
-    index = value;
+  addPayload(Payload payload) {
+    ObservableList<Payload> _tempPayload = new ObservableList<Payload>();
+    _tempPayload.addAll(payloads);
+    _tempPayload.add(payload);
+    payloads = _tempPayload;
   }
-
-  @action
-  setConnectionState(String value) {
-    conectionState = value;
-  }
-
-  @action
-  setText(String value) {
-    textFromServer = value;
-  }
-
-  @action
-  addList(String input) {
-    this._myList.add(input);
-  }
-
-  @action
-  addPoints(double a, double b) => this.points
-    ..add(new Offset(
-      a,
-      b,
-    ));
-
-  @action
-  addPoint(Offset point) =>
-      points = (List.from(points) as ObservableList)..add(point);
-
   @action
   clear() {
-    this.points.clear();
-    this._myList.clear();
+    payloads.clear();
+    payloads = new ObservableList<Payload>();
   }
 
   @action
-  resetIndex() {
-    index = 0;
-  }
+  setStrokeWidth(double i) => strokeWidth = i;
+
+  @action
+  setStrokeCap(StrokeCap i) => strokeCap = i;
+
+  @action
+  setColor(Color i) => color = i;
 }

@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:my_frontend/models/Payload.dart';
 
 class Sketcher extends CustomPainter {
-  final List<Offset> points;
-  List<Payload> payloads;
+  final List<Payload> payloads;
 
-  Sketcher(this.points);
+  Sketcher(this.payloads);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -14,15 +13,18 @@ class Sketcher extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 4.0;
 
-    for (int i = 0; i < points.length - 1; i++) {
-      if (points[i] != null && points[i + 1] != null) {
-        canvas.drawLine(points[i], points[i + 1], paint);
+    for (int i = 0; i < payloads.length - 1; i++) {
+      if (payloads[i].offset != null && payloads[i + 1].offset != null) {
+        paint.color = payloads[i].color;
+        paint.strokeCap = payloads[i].strokeCap;
+        paint.strokeWidth = payloads[i].strokeWidth;
+        canvas.drawLine(payloads[i].offset, payloads[i + 1].offset, paint);
       }
     }
   }
 
   @override
   bool shouldRepaint(Sketcher oldDelegate) {
-    return oldDelegate.points != points;
+    return oldDelegate.payloads != payloads;
   }
 }
