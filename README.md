@@ -1,4 +1,4 @@
-# my_frontend
+# Whiteboard
 
 A new Flutter project.
 
