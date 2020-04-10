@@ -13,7 +13,7 @@ class DrawApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title = 'Cloud Firestore';
-    Firestore.instance.settings(persistenceEnabled: false);
+
     return MaterialApp(
       title: title,
       debugShowCheckedModeBanner: false,
@@ -44,6 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _listeners();
     _connectSocket01();
+    Firestore.instance.settings(persistenceEnabled: false);
   }
 
   _listeners() {
