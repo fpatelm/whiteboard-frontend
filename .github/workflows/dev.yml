@@ -22,10 +22,6 @@ jobs:
         flutter upgrade
         flutter config --enable-web
         flutter build web
-    - name: Install node  
-      run: |
-        npm install
-        npm run build
     - name: Firebase Deploy
       run: |
         sudo npm install -g firebase-tools
