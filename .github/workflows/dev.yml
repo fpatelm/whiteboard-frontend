@@ -19,6 +19,7 @@ jobs:
     - name: Build Flutter web
       run: | 
         flutter pub get
+        flutter upgrade
         flutter build web
     - name: Install node  
       run: |
