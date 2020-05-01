@@ -15,19 +15,17 @@ jobs:
         java-version: '12.x'
     - uses: subosito/flutter-action@v1
       with:
-        channel: 'beta' # or: 'dev' or 'beta'
+        channel: 'dev' # or: 'dev' or 'beta'
     - name: Build Flutter web
       run: | 
         flutter pub get
+        flutter upgrade
+        flutter config --enable-web
         flutter build web
-    - name: Install node  
-      run: |
-        npm install
-        npm run build
     - name: Firebase Deploy
       run: |
         sudo npm install -g firebase-tools
-        firebase use dev
+        firebase use dev --token ${{ secrets.FIREBASE_TOKEN }}
         firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}
             
       
