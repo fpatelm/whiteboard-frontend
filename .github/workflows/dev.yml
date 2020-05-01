@@ -15,7 +15,7 @@ jobs:
         java-version: '12.x'
     - uses: subosito/flutter-action@v1
       with:
-        channel: 'master' # or: 'dev' or 'beta'
+        channel: 'dev' # or: 'dev' or 'beta'
     - name: Build Flutter web
       run: | 
         flutter pub get
