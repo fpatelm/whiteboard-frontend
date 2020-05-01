@@ -8,10 +8,13 @@ class Payload {
   final Color color;
   final StrokeCap strokeCap;
   final double strokeWidth;
+  final String uid;
   //{_strokeCap: {_strokeCap: StrokeCap.round}, _strokeWidth: 4, _offset: {dx: 475.7890625, dy: 355.6953125}, _color: {r: 0, g: 0, b: 0}}
-  Payload({this.strokeCap, this.strokeWidth, this.offset, this.color});
+  Payload(
+      {this.uid, this.strokeCap, this.strokeWidth, this.offset, this.color});
   dynamic toJson() {
     return {
+      '_uid': this.uid,
       '_strokeCap': this.strokeCap.toJson(),
       '_strokeWidth': this.strokeWidth,
       '_offset': this.offset.toJson(),
@@ -20,7 +23,8 @@ class Payload {
   }
 
   Payload.fromJson(Map<String, dynamic> json)
-      : offset = Offset(double.parse(json['_offset']['dx'].toString()),
+      : uid = json['_uid'].toString(),
+        offset = Offset(double.parse(json['_offset']['dx'].toString()),
             double.parse(json['_offset']['dy'].toString())),
         color = Color.fromRGBO(json['_color']['r'] as int,
             json['_color']['g'] as int, json['_color']['b'] as int, 1),

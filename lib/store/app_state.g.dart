@@ -9,6 +9,40 @@ part of 'app_state.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$AppState on _AppState, Store {
+  final _$useridAtom = Atom(name: '_AppState.userid');
+
+  @override
+  FirebaseUser get userid {
+    _$useridAtom.context.enforceReadPolicy(_$useridAtom);
+    _$useridAtom.reportObserved();
+    return super.userid;
+  }
+
+  @override
+  set userid(FirebaseUser value) {
+    _$useridAtom.context.conditionallyRunInAction(() {
+      super.userid = value;
+      _$useridAtom.reportChanged();
+    }, _$useridAtom, name: '${_$useridAtom.name}_set');
+  }
+
+  final _$brushModeAtom = Atom(name: '_AppState.brushMode');
+
+  @override
+  bool get brushMode {
+    _$brushModeAtom.context.enforceReadPolicy(_$brushModeAtom);
+    _$brushModeAtom.reportObserved();
+    return super.brushMode;
+  }
+
+  @override
+  set brushMode(bool value) {
+    _$brushModeAtom.context.conditionallyRunInAction(() {
+      super.brushMode = value;
+      _$brushModeAtom.reportChanged();
+    }, _$brushModeAtom, name: '${_$brushModeAtom.name}_set');
+  }
+
   final _$payloadsAtom = Atom(name: '_AppState.payloads');
 
   @override
@@ -26,6 +60,23 @@ mixin _$AppState on _AppState, Store {
     }, _$payloadsAtom, name: '${_$payloadsAtom.name}_set');
   }
 
+  final _$artistsAtom = Atom(name: '_AppState.artists');
+
+  @override
+  ObservableList<String> get artists {
+    _$artistsAtom.context.enforceReadPolicy(_$artistsAtom);
+    _$artistsAtom.reportObserved();
+    return super.artists;
+  }
+
+  @override
+  set artists(ObservableList<String> value) {
+    _$artistsAtom.context.conditionallyRunInAction(() {
+      super.artists = value;
+      _$artistsAtom.reportChanged();
+    }, _$artistsAtom, name: '${_$artistsAtom.name}_set');
+  }
+
   final _$colorAtom = Atom(name: '_AppState.color');
 
   @override
@@ -41,6 +92,40 @@ mixin _$AppState on _AppState, Store {
       super.color = value;
       _$colorAtom.reportChanged();
     }, _$colorAtom, name: '${_$colorAtom.name}_set');
+  }
+
+  final _$savedColorAtom = Atom(name: '_AppState.savedColor');
+
+  @override
+  Color get savedColor {
+    _$savedColorAtom.context.enforceReadPolicy(_$savedColorAtom);
+    _$savedColorAtom.reportObserved();
+    return super.savedColor;
+  }
+
+  @override
+  set savedColor(Color value) {
+    _$savedColorAtom.context.conditionallyRunInAction(() {
+      super.savedColor = value;
+      _$savedColorAtom.reportChanged();
+    }, _$savedColorAtom, name: '${_$savedColorAtom.name}_set');
+  }
+
+  final _$savedStrokeWidthAtom = Atom(name: '_AppState.savedStrokeWidth');
+
+  @override
+  double get savedStrokeWidth {
+    _$savedStrokeWidthAtom.context.enforceReadPolicy(_$savedStrokeWidthAtom);
+    _$savedStrokeWidthAtom.reportObserved();
+    return super.savedStrokeWidth;
+  }
+
+  @override
+  set savedStrokeWidth(double value) {
+    _$savedStrokeWidthAtom.context.conditionallyRunInAction(() {
+      super.savedStrokeWidth = value;
+      _$savedStrokeWidthAtom.reportChanged();
+    }, _$savedStrokeWidthAtom, name: '${_$savedStrokeWidthAtom.name}_set');
   }
 
   final _$strokeCapAtom = Atom(name: '_AppState.strokeCap');
@@ -90,10 +175,60 @@ mixin _$AppState on _AppState, Store {
   }
 
   @override
+  dynamic addArtists(String artist) {
+    final _$actionInfo = _$_AppStateActionController.startAction();
+    try {
+      return super.addArtists(artist);
+    } finally {
+      _$_AppStateActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic clear() {
     final _$actionInfo = _$_AppStateActionController.startAction();
     try {
       return super.clear();
+    } finally {
+      _$_AppStateActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setBrushMode(bool i) {
+    final _$actionInfo = _$_AppStateActionController.startAction();
+    try {
+      return super.setBrushMode(i);
+    } finally {
+      _$_AppStateActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setSavedColor(Color i) {
+    final _$actionInfo = _$_AppStateActionController.startAction();
+    try {
+      return super.setSavedColor(i);
+    } finally {
+      _$_AppStateActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setSavedStrokeWidth(double i) {
+    final _$actionInfo = _$_AppStateActionController.startAction();
+    try {
+      return super.setSavedStrokeWidth(i);
+    } finally {
+      _$_AppStateActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setUserId(FirebaseUser user) {
+    final _$actionInfo = _$_AppStateActionController.startAction();
+    try {
+      return super.setUserId(user);
     } finally {
       _$_AppStateActionController.endAction(_$actionInfo);
     }
@@ -132,7 +267,7 @@ mixin _$AppState on _AppState, Store {
   @override
   String toString() {
     final string =
-        'payloads: ${payloads.toString()},color: ${color.toString()},strokeCap: ${strokeCap.toString()},strokeWidth: ${strokeWidth.toString()}';
+        'userid: ${userid.toString()},brushMode: ${brushMode.toString()},payloads: ${payloads.toString()},artists: ${artists.toString()},color: ${color.toString()},savedColor: ${savedColor.toString()},savedStrokeWidth: ${savedStrokeWidth.toString()},strokeCap: ${strokeCap.toString()},strokeWidth: ${strokeWidth.toString()}';
     return '{$string}';
   }
 }

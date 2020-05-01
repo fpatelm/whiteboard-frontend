@@ -33,6 +33,10 @@ dependencies:
   mobx: ^1.1.1
   flutter_mobx: ^1.1.0
   flutter_speed_dial: ^1.2.5
+  firebase_auth: ^0.15.5+3
+  material_design_icons_flutter: ^4.0.5045
+
+
 
 dev_dependencies:
   flutter_test:

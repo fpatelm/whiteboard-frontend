@@ -1,14 +1,16 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:http/http.dart' as http;
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_frontend/global.dart';
+import 'package:my_frontend/service/auth.dart';
 
 import 'Board.dart';
 import 'Menu.dart';
-import 'models/Payload.dart';
 
 class DrawApp extends StatelessWidget {
   const DrawApp({Key key}) : super(key: key);
@@ -36,96 +38,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Payload> payloads = new List<Payload>();
-
   @override
   void initState() {
     super.initState();
-    _listeners();
-    _connectSocket01();
-    Firestore.instance.settings(persistenceEnabled: false);
-  }
-
-  _listeners() {
-    mxStore.socket.on('connect', (data) {
-      print("connect");
-    });
-    mxStore.socket.on('connect_error', (data) => print(" faizal Error"));
-
-    mxStore.socket.on('disconnect', (data) {
-      print("faizal Disconnected");
-    });
-
-    mxStore.socket
-        .on('reconnect_failed', (data) => print("faizal reconnect_failed"));
-    mxStore.socket
-        .on('reconnect_error', (data) => print("faizal reconnect_error"));
-    mxStore.socket.on('reconnecting', (data) => print("faizal reconnecting"));
-
-    mxStore.socket.on('broadcast', (data) {
-      mxStore.addPayload(Payload.fromJson(data));
-    });
-
-    mxStore.socket.on('mouseup', (_) {
-      print("mouse up ${mxStore.socket.id}");
-      Payload payload = Payload(
-          color: Colors.black,
-          offset: null,
-          strokeCap: StrokeCap.round,
-          strokeWidth: 4.0);
-      mxStore.addPayload(payload);
-    });
-    mxStore.socket.on('clear', (_) {
-      mxStore.clear();
-      print("clear ${mxStore.socket.id}");
-    });
-  }
-
-  _connectSocket01() {
-    mxStore.socket.connect();
-    print("connect? ${mxStore.socket.connected}");
+    appService.init();
   }
 
   @override
   Widget build(BuildContext context) {
+    final key = new GlobalKey<ScaffoldState>();
     return Scaffold(
+      key: key,
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: <Widget>[
           GestureDetector(
-            onPanUpdate: (details) {
-              RenderBox box = context.findRenderObject();
-              Offset point = box.globalToLocal(details.globalPosition);
-
-              Payload payload = Payload(
-                  color: mxStore.color,
-                  offset: point,
-                  strokeCap: mxStore.strokeCap,
-                  strokeWidth: mxStore.strokeWidth);
-
-              mxStore.addPayload(payload);
-              print(payload.toJson());
-              mxStore.socket.emitWithAck('chat', payload.toJson(), ack: (data) {
-                print('ack $data');
-                if (data != null) {
-                  print('from server $data');
-                } else {
-                  print("Null");
-                }
-              });
-
-              //print(point);
-            },
-            onPanEnd: (details) {
-              mxStore.socket.emit('mouseup', null);
-              Payload payload = Payload(
-                  color: Colors.black,
-                  offset: null,
-                  strokeCap: StrokeCap.round,
-                  strokeWidth: 4.0);
-
-              mxStore.addPayload(payload);
-            },
+            onPanUpdate: (details) => appService.onDrawing(context, details),
+            onPanEnd: (details) => appService.onStopDrawing(),
+            onTapDown: (details) => appService.onDrawPoint(context, details),
             child: Observer(
               builder: (_) => Board(
                 payloads: mxStore.payloads,
@@ -137,11 +67,44 @@ class _MyHomePageState extends State<MyHomePage> {
             right: 5,
             child: Observer(
               builder: (_) => IconButton(
-                icon: Icon(Icons.colorize),
+                icon: Icon(
+                    mxStore.brushMode ? MdiIcons.eraserVariant : Icons.brush),
                 onPressed: () {},
-                color: mxStore.color,
+                color: mxStore.brushMode ? Colors.black : mxStore.color,
               ),
             ),
+          ),
+          FutureBuilder(
+            future: AuthService().signInAnon(),
+            builder: (context, snapshot) {
+              print(snapshot.connectionState.toString());
+              switch (snapshot.connectionState) {
+                case ConnectionState.done:
+                  return Positioned(
+                    top: 40,
+                    right: 5,
+                    child: IconButton(
+                      icon: Icon(Icons.share),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(
+                            text: (snapshot.data as FirebaseUser)
+                                .uid
+                                .toString()));
+                        key.currentState.showSnackBar(
+                          SnackBar(
+                            content: Text("Copied to Clipboard"),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                case ConnectionState.waiting:
+                  return Positioned(
+                      top: 40, right: 5, child: CircularProgressIndicator());
+                default:
+                  return Text("");
+              }
+            },
           )
         ],
       ),

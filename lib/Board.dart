@@ -14,7 +14,7 @@ class Board extends StatelessWidget {
       alignment: Alignment.topLeft,
       color: Colors.white,
       child: CustomPaint(
-        painter: Sketcher(payloads),
+        painter: Sketcher(payloads, context),
       ),
     );
   }

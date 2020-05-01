@@ -1,25 +1,22 @@
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:my_frontend/service/app.dart';
+import 'package:my_frontend/service/firestore.dart';
+import 'package:my_frontend/service/socketio.dart';
 import 'package:my_frontend/store/app_state.dart';
 
 final mxStore = AppState(); // Instantiate the store
-enum ENV { DEV, PROD }
-final env = ENV.PROD;
-
-String getUrl() {
-  switch (env) {
-    case ENV.DEV:
-      return "http://localhost:8080";
-    case ENV.PROD:
-      return "https://whiteboard-be.herokuapp.com";
-  }
-}
+final SocketIOSerivce socketService = SocketIOSerivce();
+final fireStoreService = FirestoreService();
+final appService = BoardAppService();
 
 extension OffsetManagment on Offset {
   dynamic toJson() {
     return {'dx': this.dx, 'dy': this.dy};
   }
+
+  void blabla() {}
 }
 
 extension StrokeCapManagement on StrokeCap {
