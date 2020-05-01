@@ -20,6 +20,7 @@ jobs:
       run: | 
         flutter pub get
         flutter upgrade
+        flutter config --enable-web
         flutter build web
     - name: Install node  
       run: |
