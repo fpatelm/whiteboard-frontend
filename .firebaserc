@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "prod": "whiteboard-cc222",
+    "dev": "whiteboard-dev-71dd4"
+  }
+}

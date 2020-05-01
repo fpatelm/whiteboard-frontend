@@ -2,9 +2,9 @@ name: Dart CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ stage ]
   pull_request:
-    branches: [ master ]
+    branches: [ stage ]
 
 jobs: 
   build-and-test: 
