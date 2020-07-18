@@ -2,7 +2,7 @@ import 'package:my_frontend/global.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 enum ENV { LOCAL, DEV, PROD }
-final env = ENV.LOCAL;
+final env = ENV.DEV;
 
 String getUrl() {
   switch (env) {
