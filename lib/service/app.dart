@@ -9,9 +9,10 @@ class BoardAppService {
   void init() {
     socketService.init();
     socketService.handleConnect();
+    getAllUsers();
     print("connect? ${socketService.socket.connected}");
 
-    authenticateUserAndStore();
+    // authenticateUserAndStore();
 
     socketService.received(
         event: 'broadcast',
@@ -40,6 +41,19 @@ class BoardAppService {
     socketService.received(event: 'clear', callback: (data) => mxStore.clear());
   }
 
+  void getAllUsers() {
+    socketService.socket.on('connect', (data) {
+      print("everyone from " + mxStore.userid.uid);
+      //Send the userid to backend in order to save it in database
+      socketService.emit(event: 'everyone', data: mxStore.userid.uid);
+    });
+    socketService.socket.on('everyone', (data) {
+      // print("everyone");
+      //Send the userid to backend in order to save it in database
+      //socketService.emit(event: 'everyone', data: mxStore.userid.toString());
+    });
+  }
+
   void authenticateUserAndStore() {
     Future<FirebaseUser> user = AuthService().signInAnon();
     user.then((value) {
@@ -55,6 +69,17 @@ class BoardAppService {
       }
       if (value != null) print(value.uid);
     });
+  }
+
+  void sendAndStoreUser(FirebaseUser user) {
+    socketService.socket.on('connect', (data) {
+      // print("Connect");
+      //Send the userid to backend in order to save it in database
+      socketService.emit(event: 'userid', data: user.uid.toString());
+      print("current user firebae: ${user.uid.toString()}");
+    });
+    mxStore.addArtists(user.uid.toString());
+    mxStore.setUserId(user);
   }
 
   void onDrawing(BuildContext context, dynamic details) {

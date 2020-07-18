@@ -16,6 +16,11 @@ class Sketcher extends CustomPainter {
       ..strokeWidth = 4.0;
 
     print("looping: ${mxStore.artists.toString()}");
+
+    mxStore.artists.forEach((element) {
+      print(element.toString());
+    });
+
     mxStore.artists.forEach((it) {
       _tempPayloads.clear();
       _tempPayloads = payloads.where((element) {
@@ -34,9 +39,12 @@ class Sketcher extends CustomPainter {
       }
     });
 
-    /*  for (int i = 0; i < payloads.length - 1; i++) {
+    /*   for (int i = 0; i < payloads.length - 1; i++) {
       if (payloads[i].offset != null && payloads[i + 1].offset != null) {
         //canvas.drawLine(convertOffset(payloads[i].offset),convertOffset(payloads[i + 1].offset), paint);
+        paint.color = payloads[i].color;
+        paint.strokeWidth = payloads[i].strokeWidth;
+        paint.strokeCap = payloads[i].strokeCap;
         canvas.drawLine(payloads[i].offset, payloads[i + 1].offset, paint);
         canvas.drawCircle(Offset(220, 200), 16, paint);
         canvas.drawLine(Offset(220, 200), Offset(320, 300), paint);

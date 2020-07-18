@@ -1,12 +1,15 @@
+import 'package:my_frontend/global.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-enum ENV { DEV, PROD }
-final env = ENV.PROD;
+enum ENV { LOCAL, DEV, PROD }
+final env = ENV.LOCAL;
 
 String getUrl() {
   switch (env) {
-    case ENV.DEV:
+    case ENV.LOCAL:
       return "http://localhost:8080";
+    case ENV.DEV:
+      return "https://whiteboard-be-dev.herokuapp.com";
     case ENV.PROD:
       return "https://whiteboard-be.herokuapp.com";
   }
@@ -19,8 +22,9 @@ class SocketIOSerivce {
 
   void handleConnect() {
     this.socket.on('connect', (data) {
-      print("Connect");
+      // print("Connect");
       //Send the userid to backend in order to save it in database
+      this.socket.emit('userid', mxStore.userid.uid);
     });
   }
 
