@@ -28,7 +28,7 @@ jobs:
               login ${{ secrets.HEROKU_EMAIL }}
               password ${{ secrets.HEROKU_API_KEY }}
           EOF
-    - run: heroku login      
-    - run: heroku container:login 
-    - run: heroku container:push web --app whiteboard-fe
-    - run: heroku container:release web --app whiteboard-fe
+    #- run: heroku login      
+    #- run: heroku container:login 
+    #- run: heroku container:push web --app whiteboard-fe
+    #- run: heroku container:release web --app whiteboard-fe
