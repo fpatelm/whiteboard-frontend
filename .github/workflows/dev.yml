@@ -24,8 +24,8 @@ jobs:
         flutter build web
     - name: Firebase Deploy
       run: |
-        sudo npm install -g firebase-tools
-        firebase use dev --token ${{ secrets.FIREBASE_TOKEN }}
-        firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}
+       # sudo npm install -g firebase-tools
+        #firebase use dev --token ${{ secrets.FIREBASE_TOKEN }}
+       # firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}
             
       
