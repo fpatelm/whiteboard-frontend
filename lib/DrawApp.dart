@@ -58,16 +58,18 @@ class _MyHomePageState extends State<MyHomePage> {
         future: userFuture,
         builder: (context, snapshot) {
           print(snapshot.connectionState.toString());
-          if (snapshot.hasError) {
+         /* if (snapshot.hasError) {
             return Center(
               child: Text("Error Connecting!"),
             );
-          }
+          }*/
+          const String applicationName = String.fromEnvironment("DEMO",defaultValue: "SOU DEFAULT");
           switch (snapshot.connectionState) {
+
             case ConnectionState.done:
               BoardAppService().sendAndStoreUser(snapshot.data);
               print("faizal" + snapshot.data.uid);
-              return draw_board();
+              return Text(applicationName);//draw_board();
             case ConnectionState.active:
             case ConnectionState.waiting:
               return Center(
@@ -75,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             case ConnectionState.none:
             default:
-              return Text("");
+              return Text(String.fromEnvironment("DEMO",defaultValue: "SOU DEFAULT"));
           }
         },
       ),
